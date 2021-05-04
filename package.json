@@ -1,0 +1,25 @@
+{
+  "name": "employeeTracker",
+  "version": "1.0.0",
+  "description": "a terminal application to add and edit employees with the MySql Database",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/levickane/employeeTracker.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/levickane/employeeTracker/issues"
+  },
+  "homepage": "https://github.com/levickane/employeeTracker#readme",
+  "dependencies": {
+    "console.table": "^0.10.0",
+    "inquirer": "^8.0.0",
+    "mysql": "^2.18.1"
+  }
+}
