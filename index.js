@@ -15,7 +15,13 @@ const connection = mysql.createConnection({
   database: 'business_db'
 });
 
-function viewAllEmployees() {}
+function viewAllEmployees() {
+  connection.query('SELECT * FROM employee', (err, res) => {
+    if (err) throw err;
+    console.table(res);
+  });
+  init();
+}
 
 function viewAllRoles() {}
 
@@ -27,7 +33,51 @@ function addEmployee() {}
 
 function removeEmployee() {}
 
-function updateEmployeeRole() {}
+function updateEmployeeRole() {
+  let employeeChoice = [];
+  connection.query('SELECT * FROM employee', (err, res) => {
+    if (err) throw err;
+    console.log(res);
+    res.forEach((emp) => {
+      employeeChoice.push({ name: emp.first_name, value: emp.id });
+    });
+  });
+  console.log(employeeChoice);
+  let choice = [];
+  connection.query('SELECT * FROM role', (err, res) => {
+    if (err) throw err;
+    res.forEach((role) => {
+      choice.push({ name: role.title, value: role.id });
+    });
+  });
+  inquirer
+    .prompt([
+      /* Pass your questions in here */
+      {
+        name: 'first_name',
+        message: "Who's role would you like to update?",
+        type: 'list',
+        choices: employeeChoice
+      },
+      {
+        name: 'role',
+        message: 'What is their role?',
+        type: 'list',
+        choices: choice
+      }
+    ])
+    .then((answers) => {
+      console.log(answers);
+      // Use user feedback for... whatever!!
+    })
+    .catch((error) => {
+      if (error.isTtyError) {
+        // Prompt couldn't be rendered in the current environment
+      } else {
+        // Something else went wrong
+      }
+    });
+}
 
 function updateEmployeeManager() {}
 
@@ -53,9 +103,9 @@ function init() {
     ])
     .then((answer) => {
       // Use user feedback for... whatever!!
-      console.log(answer.initialSearch);
+      console.log(answer.initialSelection);
       //   Use user feedback for... whatever!!
-      switch (answer.initialSearch) {
+      switch (answer.initialSelection) {
         case 'View all Employees':
           viewAllEmployees();
           break;
