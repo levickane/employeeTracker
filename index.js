@@ -92,3 +92,4 @@ function init() {
       }
     });
 }
+init();
