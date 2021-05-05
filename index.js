@@ -36,13 +36,20 @@ function viewAllRoles() {
   init();
 }
 
-function viewEmployeesByDepartment() {}
-
-function viewEmployeesByManager() {}
+function viewDepartments() {
+  connection.query('SELECT * FROM department', (err, res) => {
+    if (err) throw err;
+    console.log('******\n********\n******');
+    console.table(res);
+  });
+  init();
+}
 
 function addEmployee() {}
 
-function removeEmployee() {}
+function addRole() {}
+
+function addDepartment() {}
 
 function updateEmployeeRole() {
   const employeeChoices = [];
@@ -51,7 +58,6 @@ function updateEmployeeRole() {
     res.forEach((employee) => {
       employeeChoices.push({ name: employee.first_name, value: employee.id });
     });
-    console.log('Employee Choices', employeeChoices);
   });
   const roleChoice = [];
   connection.query('SELECT * FROM role', (err, res) => {
@@ -59,7 +65,6 @@ function updateEmployeeRole() {
     res.forEach((role) => {
       roleChoice.push({ name: role.title, value: role.id });
     });
-    console.log('Role Choices', roleChoice);
   });
   setTimeout(function () {
     inquirer
@@ -78,7 +83,6 @@ function updateEmployeeRole() {
         }
       ])
       .then(({ employeeid, roleid }) => {
-        console.log(employeeid, roleid);
         // Use user feedback for... whatever!!
         connection.query(
           'UPDATE employee SET role_id=? WHERE id=?',
@@ -100,8 +104,6 @@ function updateEmployeeRole() {
   }, 1000);
 }
 
-function updateEmployeeManager() {}
-
 function init() {
   inquirer
     .prompt([
@@ -113,12 +115,11 @@ function init() {
         choices: [
           'View all Employees',
           'View all Roles',
-          'View employees by Department',
-          'View employees by Manager',
+          'View all Departments',
           'Add Employee',
-          'Remove Employee',
-          'Update Employee Role',
-          'Update Employee Manager'
+          'Add Role',
+          'Add Department',
+          'Update Employee Role'
         ]
       }
     ])
@@ -133,23 +134,20 @@ function init() {
         case 'View all Roles':
           viewAllRoles();
           break;
-        case 'View employees by Department':
-          viewEmployeesByDepartment();
-          break;
-        case 'View employees by Manager':
-          viewEmployeesByManager();
+        case 'View all Departments':
+          viewDepartments();
           break;
         case 'Add Employee':
           addEmployee();
           break;
-        case 'Remove Employee':
-          removeEmployee();
+        case 'Add Role':
+          addRole();
+          break;
+        case 'Add Department':
+          addDepartment();
           break;
         case 'Update Employee Role':
           updateEmployeeRole();
-          break;
-        case 'Update Employee Manager':
-          updateEmployeeManager();
           break;
         default:
           connection.end();
