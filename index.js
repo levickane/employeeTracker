@@ -22,9 +22,9 @@ function viewAllEmployees() {
       if (err) throw err;
       console.log('******\n********\n******');
       console.table(res);
+      init();
     }
   );
-  init();
 }
 
 function viewAllRoles() {
@@ -32,8 +32,8 @@ function viewAllRoles() {
     if (err) throw err;
     console.log('******\n********\n******');
     console.table(res);
+    init();
   });
-  init();
 }
 
 function viewDepartments() {
@@ -41,15 +41,95 @@ function viewDepartments() {
     if (err) throw err;
     console.log('******\n********\n******');
     console.table(res);
+    init();
   });
-  init();
 }
 
-function addEmployee() {}
+function addEmployee() {
+  let roleChoices = [];
+  connection.query('SELECT * FROM role', (err, res) => {
+    if (err) throw err;
+    res.forEach((role) => {
+      roleChoices.push({ name: role.name, value: role.id });
+    });
+  });
+}
 
-function addRole() {}
+function addRole() {
+  let departmentChoices = [];
+  connection.query('SELECT * FROM department', (err, res) => {
+    if (err) throw err;
+    res.forEach((department) => {
+      departmentChoices.push({ name: department.name, value: department.id });
+    });
+  });
+  inquirer
+    .prompt([
+      {
+        name: 'title',
+        message: 'What is the title of your role?',
+        type: 'input'
+      },
+      {
+        name: 'salary',
+        message: 'What is the salary of this role?',
+        type: 'input'
+      },
+      {
+        name: 'deptChoice',
+        message: 'What is the department that this role falls under?',
+        type: 'list',
+        choices: departmentChoices
+      }
+    ])
+    .then((answer) => {
+      // Use user feedback for... whatever!!
+      connection.query(
+        `INSERT INTO role (title, salary, department_id) VALUES ("${answer.title}", "${answer.salary}", "${answer.deptChoice}")`,
+        (err, res) => {
+          if (err) throw err;
+          viewAllRoles();
+          init();
+        }
+      );
+    })
+    .catch((error) => {
+      if (error.isTtyError) {
+        // Prompt couldn't be rendered in the current environment
+      } else {
+        // Something else went wrong
+      }
+    });
+}
 
-function addDepartment() {}
+function addDepartment() {
+  inquirer
+    .prompt([
+      {
+        name: 'deptName',
+        message: 'What is the name of the Department you wish to add?',
+        type: 'input'
+      }
+    ])
+    .then((answer) => {
+      // Use user feedback for... whatever!!
+      connection.query(
+        `INSERT INTO department (name) VALUES ("${answer.deptName}")`,
+        (err, res) => {
+          if (err) throw err;
+          viewDepartments();
+          init();
+        }
+      );
+    })
+    .catch((error) => {
+      if (error.isTtyError) {
+        // Prompt couldn't be rendered in the current environment
+      } else {
+        // Something else went wrong
+      }
+    });
+}
 
 function updateEmployeeRole() {
   const employeeChoices = [];
@@ -90,9 +170,9 @@ function updateEmployeeRole() {
           (err, res) => {
             if (err) throw err;
             console.log(res);
+            init();
           }
         );
-        init();
       })
       .catch((error) => {
         if (error.isTtyError) {
@@ -119,7 +199,8 @@ function init() {
           'Add Employee',
           'Add Role',
           'Add Department',
-          'Update Employee Role'
+          'Update Employee Role',
+          'QUIT'
         ]
       }
     ])
