@@ -16,14 +16,25 @@ const connection = mysql.createConnection({
 });
 
 function viewAllEmployees() {
-  connection.query('SELECT * FROM employee', (err, res) => {
+  connection.query(
+    'SELECT employee.id, employee.first_name, employee.last_name, employee.manager_id AS manager, role.title, role.salary, department.name AS department FROM ((employee  INNER JOIN role ON employee.role_id = role.id) INNER JOIN department ON role.department_id = department.id);',
+    (err, res) => {
+      if (err) throw err;
+      console.log('******\n********\n******');
+      console.table(res);
+    }
+  );
+  init();
+}
+
+function viewAllRoles() {
+  connection.query('SELECT * FROM role', (err, res) => {
     if (err) throw err;
+    console.log('******\n********\n******');
     console.table(res);
   });
   init();
 }
-
-function viewAllRoles() {}
 
 function viewEmployeesByDepartment() {}
 
@@ -34,49 +45,59 @@ function addEmployee() {}
 function removeEmployee() {}
 
 function updateEmployeeRole() {
-  let employeeChoice = [];
+  const employeeChoices = [];
   connection.query('SELECT * FROM employee', (err, res) => {
     if (err) throw err;
-    console.log(res);
-    res.forEach((emp) => {
-      employeeChoice.push({ name: emp.first_name, value: emp.id });
+    res.forEach((employee) => {
+      employeeChoices.push({ name: employee.first_name, value: employee.id });
     });
+    console.log('Employee Choices', employeeChoices);
   });
-  console.log(employeeChoice);
-  let choice = [];
+  const roleChoice = [];
   connection.query('SELECT * FROM role', (err, res) => {
     if (err) throw err;
     res.forEach((role) => {
-      choice.push({ name: role.title, value: role.id });
+      roleChoice.push({ name: role.title, value: role.id });
     });
+    console.log('Role Choices', roleChoice);
   });
-  inquirer
-    .prompt([
-      /* Pass your questions in here */
-      {
-        name: 'first_name',
-        message: "Who's role would you like to update?",
-        type: 'list',
-        choices: employeeChoice
-      },
-      {
-        name: 'role',
-        message: 'What is their role?',
-        type: 'list',
-        choices: choice
-      }
-    ])
-    .then((answers) => {
-      console.log(answers);
-      // Use user feedback for... whatever!!
-    })
-    .catch((error) => {
-      if (error.isTtyError) {
-        // Prompt couldn't be rendered in the current environment
-      } else {
-        // Something else went wrong
-      }
-    });
+  setTimeout(function () {
+    inquirer
+      .prompt([
+        {
+          name: 'employeeid',
+          message: "Who's role would you like to update?",
+          type: 'list',
+          choices: employeeChoices
+        },
+        {
+          name: 'roleid',
+          message: 'What is their new role?',
+          type: 'list',
+          choices: roleChoice
+        }
+      ])
+      .then(({ employeeid, roleid }) => {
+        console.log(employeeid, roleid);
+        // Use user feedback for... whatever!!
+        connection.query(
+          'UPDATE employee SET role_id=? WHERE id=?',
+          [roleid, employeeid],
+          (err, res) => {
+            if (err) throw err;
+            console.log(res);
+          }
+        );
+        init();
+      })
+      .catch((error) => {
+        if (error.isTtyError) {
+          // Prompt couldn't be rendered in the current environment
+        } else {
+          // Something else went wrong
+        }
+      });
+  }, 1000);
 }
 
 function updateEmployeeManager() {}
