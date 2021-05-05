@@ -20,7 +20,7 @@ function viewAllEmployees() {
     'SELECT employee.id, employee.first_name, employee.last_name, employee.manager_id AS manager, role.title, role.salary, department.name AS department FROM ((employee  INNER JOIN role ON employee.role_id = role.id) INNER JOIN department ON role.department_id = department.id);',
     (err, res) => {
       if (err) throw err;
-      console.log('******\n********\n******');
+      console.log('\n******\n******\n');
       console.table(res);
       init();
     }
@@ -247,6 +247,7 @@ function updateEmployeeRole() {
           [roleid, employeeid],
           (err, res) => {
             if (err) throw err;
+            viewAllEmployees();
             init();
           }
         );
