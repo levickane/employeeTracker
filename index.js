@@ -17,7 +17,7 @@ const connection = mysql.createConnection({
 
 function viewAllEmployees() {
   connection.query(
-    'SELECT employee.id, employee.first_name, employee.last_name, employee.manager_id AS manager, role.title, role.salary, department.name AS department FROM ((employee  INNER JOIN role ON employee.role_id = role.id) INNER JOIN department ON role.department_id = department.id);',
+    "SELECT employee.id, employee.first_name, employee.last_name, role.title,  department.name AS department, role.salary, CONCAT(manager.first_name, ' ', manager.last_name) AS manager FROM employee LEFT JOIN role ON employee.role_id = role.id LEFT JOIN department ON role.department_id = department.id LEFT JOIN employee manager ON manager.id = employee.manager_id",
     (err, res) => {
       if (err) throw err;
       console.log('\n******\n******\n');
@@ -57,7 +57,6 @@ function addEmployee() {
   connection.query('SELECT * FROM employee', (err, res) => {
     if (err) throw err;
     res.forEach((potentialManager) => {
-      console.log(potentialManager);
       managerChoices.push({
         name: potentialManager.first_name + ' ' + potentialManager.last_name,
         value: potentialManager.id
@@ -85,8 +84,7 @@ function addEmployee() {
       },
       {
         name: 'manager_id',
-        message:
-          'Press enter if the employee has no manager otherwise, select one here',
+        message: "Select Employee's Manager",
         type: 'list',
         choices: managerChoices
       }
@@ -191,9 +189,8 @@ function addDepartment() {
     })
     .catch((error) => {
       if (error.isTtyError) {
+        console.log(error);
         // Prompt couldn't be rendered in the current environment
-      } else {
-        // Something else went wrong
       }
     });
 }
@@ -308,11 +305,8 @@ function init() {
         case 'Update Employee Role':
           updateEmployeeRole();
           break;
-        case 'QUIT':
-          connection.end();
-          break;
         default:
-          connection.end();
+          process.exit();
       }
     })
     .catch((error) => {
