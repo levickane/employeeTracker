@@ -97,7 +97,6 @@ function addEmployee() {
           (err, res) => {
             if (err) throw err;
             viewAllEmployees();
-            init();
           }
         );
       } else {
@@ -106,7 +105,6 @@ function addEmployee() {
           (err, res) => {
             if (err) throw err;
             viewAllEmployees();
-            init();
           }
         );
       }
@@ -114,8 +112,9 @@ function addEmployee() {
     .catch((error) => {
       if (error.isTtyError) {
         // Prompt couldn't be rendered in the current environment
+        console.log(error);
       } else {
-        // Something else went wrong
+        init();
       }
     });
 }
@@ -154,15 +153,15 @@ function addRole() {
         (err, res) => {
           if (err) throw err;
           viewAllRoles();
-          init();
         }
       );
     })
     .catch((error) => {
       if (error.isTtyError) {
         // Prompt couldn't be rendered in the current environment
+        console.log(error);
       } else {
-        // Something else went wrong
+        init();
       }
     });
 }
@@ -183,7 +182,6 @@ function addDepartment() {
         (err, res) => {
           if (err) throw err;
           viewDepartments();
-          init();
         }
       );
     })
@@ -191,6 +189,8 @@ function addDepartment() {
       if (error.isTtyError) {
         console.log(error);
         // Prompt couldn't be rendered in the current environment
+      } else {
+        init();
       }
     });
 }
@@ -245,15 +245,15 @@ function updateEmployeeRole() {
           (err, res) => {
             if (err) throw err;
             viewAllEmployees();
-            init();
           }
         );
       })
       .catch((error) => {
         if (error.isTtyError) {
           // Prompt couldn't be rendered in the current environment
+          console.log(error);
         } else {
-          // Something else went wrong
+          init();
         }
       });
   }, 1000);
@@ -312,8 +312,7 @@ function init() {
     .catch((error) => {
       if (error.isTtyError) {
         // Prompt couldn't be rendered in the current environment
-      } else {
-        // Something else went wrong
+        console.log(error);
       }
     });
 }
