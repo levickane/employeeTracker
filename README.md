@@ -2,7 +2,7 @@
 
 ## Description
 
-This terminal application was built in order to easily add and edit employees, employee roles, and departments for a compnay using a MySql Database
+This terminal application was built in order to easily add and edit employees, employee roles, and departments for a compnay using a MySql Database. A through video of how the application works can be viewed here: [Walk Through Video](https://drive.google.com/file/d/1cIi8k1RvhDjIET1T5_LUxtjmIn-OzIoi/view)
 
 ## Table of Contents
 
